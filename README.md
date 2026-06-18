@@ -1,17 +1,38 @@
-# Shortest Paths with Positive and Negative Weights
+# Shortest Paths Analysis: Dijkstra vs Bellman-Ford
 
 ## Team Members
-- [cite_start]Nikolaos Katsikavalis
-- [cite_start]Georgios Papamikroulis 
+- Nikolaos Katsikavalis 
+- Georgios Papamikroulis 
 
-## Description
-[cite_start]This project focuses on finding shortest paths in networks with altitude variations, where moving uphill incurs a positive fuel cost (+1) and moving downhill results in a negative cost (-1)[cite: 1265, 1294, 1295, 1296]. [cite_start]The study implements and compares **Dijkstra's Algorithm** and the **Bellman-Ford Algorithm** using a simulation over 10,000 random graphs to analyze performance and constraints under negative edge weights and negative cycles[cite: 1475].
+---
 
-## Key Findings
-- [cite_start]**Dijkstra's Limitations:** Dijkstra's algorithm fails to guarantee correct results in the presence of negative edge weights due to its greedy nature, as it does not re-evaluate already visited nodes[cite: 1299, 1300, 1302, 1357].
-- [cite_start]**Negative Cycles Impact:** In graphs containing negative cycles, shortest paths become ill-posed (tending to negative infinity)[cite: 1346, 1352]. [cite_start]In this simulation, negative cycles appeared in **74.70%** of the generated random graphs[cite: 1481, 1487].
-- [cite_start]**Dijkstra vs Bellman-Ford:** There is a 100% correlation between the presence of negative cycles and Dijkstra's failure[cite: 1490]. [cite_start]Dijkstra produced incorrect, finite distances in 74.70% of the cases [cite: 1483, 1492][cite_start], while succeeding only in the 25.30% of graphs that lacked negative cycles[cite: 1482, 1493]. [cite_start]Therefore, Bellman-Ford is mandatory for reliable pathfinding in such topologies[cite: 1496].
+## What We Did in This Project (Project Overview)
+In this assignment, we investigated how routing algorithms behave when dealing with a mix of positive and negative edge weights. 
+
+### 1. The Scenario (Fuel Cost Model)
+We modeled a real-world problem involving vehicle fuel consumption across terrain with significant altitude changes:
+* **Uphill Movements:** Moving to a higher altitude requires engine work against gravity, resulting in positive fuel consumption (represented as a **+1** weight).
+* **Downhill Movements:** Moving downhill allows the vehicle to coast or use gravity, which reduces overall energy expenditure. This is represented as a "reward" or negative cost (represented as a **-1** weight).
+
+### 2. Theoretical Trace
+We manually executed and traced Dijkstra's algorithm on a specific 4-node graph ($s$, $A$, $B$, $t$) where the edges followed an antisymmetric rule ($w(u,v) = -w(v,u)$). Through this trace, we analyzed step-by-step why Dijkstra gets trapped by negative weights and fails to find the actual shortest path.
+
+### 3. Experimental Simulation
+To back up our theoretical analysis, we wrote a Python simulation that:
+* Generated **10,000 random graphs** with high density ($p=0.7$) and random directional distribution of positive/negative weights ($q=0.3$).
+* Ran both **Dijkstra's** and **Bellman-Ford's** algorithms on every single graph.
+* Compared their final distance outputs to measure Dijkstra's exact failure rate.
+
+---
+
+## Key Findings & Results
+* **Dijkstra's Flaw:** Because Dijkstra uses a greedy strategy, once it "closes" a node, it assumes the shortest path to it has been definitively found. When negative edges exist, cheaper paths can appear later, but Dijkstra never goes back to re-evaluate them.
+* **The Danger of Negative Cycles:** We discovered that a massive **74.70%** of the generated random graphs formed "negative cycles" (loops where spinning around indefinitely keeps reducing the total cost towards negative infinity). 
+* **The Verdict:** In our 10,000 trials, Dijkstra was incorrect in exactly **74.70%** of the cases (every single time a negative cycle existed). It only gave correct answers in the **25.30%** of graphs that happened to have no negative cycles. 
+* **Conclusion:** For any network structure where "downhill" rewards (negative weights) are possible, the **Bellman-Ford** algorithm is absolutely mandatory because it is the only one capable of detecting these infinite-loop anomalies.
+
+---
 
 ## Repository Contents
-- `Dijktracode.py`: Python simulation script that generates random graphs, executes both algorithms, and compiles comparison metrics.
-- [cite_start]`δεύτερη_απαλλακτικη_εργασια_αλγόριθμοι (1).pdf`: Detailed theoretical report containing step-by-step trace analysis, graph illustrations, and experiment conclusions[cite: 1265, 1305, 1484].
+* `Dijktracode.py`: Our complete Python implementation containing the graph generator, the customized Dijkstra/Bellman-Ford algorithms, and the simulation loop.
+* `δεύτερη_απαλλακτικη_εργασια_αλγόριθμοι (1).pdf`: Our analytical project report, which includes our handwritten graph diagram, mathematical formulations, and detailed answers to all theoretical questions.
